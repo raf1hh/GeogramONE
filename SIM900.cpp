@@ -256,8 +256,9 @@ uint8_t SIM900::readMessageBreakOut(simSmsData *sms, uint8_t msg)
 		ptr = strtok_r(NULL,"\"",&str);ptr = strtok_r(NULL,"\"",&str);
 		ptr = strtok_r(NULL,",",&str);
 		strcpy(sms->smsDate,ptr);
-		ptr = strtok_r(NULL,"-",&str);
+		ptr = strtok_r(NULL,"\"",&str);
 		strcpy(sms->smsTime,ptr);
+		sms->smsTime[8] = '\0';
 		ptr = strtok_r(NULL,"\n",&str);
 	}	
 	else if(replyMessageType == 2) //message is an email
@@ -267,8 +268,9 @@ uint8_t SIM900::readMessageBreakOut(simSmsData *sms, uint8_t msg)
 		ptr = strtok_r(NULL,"\"",&str);ptr = strtok_r(NULL,"\"",&str);
 		ptr = strtok_r(NULL,",",&str);
 		strcpy(sms->smsDate,ptr);
-		ptr = strtok_r(NULL,"-",&str);
+		ptr = strtok_r(NULL,"\"",&str);
 		strcpy(sms->smsTime,ptr);
+		sms->smsTime[8] = '\0';
 		ptr = strtok_r(NULL,"\n",&str); 
 		ptr = strtok_r(NULL,"/",&str);
 		if (strlen(ptr) < 39)  //if email address is 39 digits or less then it's OK to use
@@ -379,7 +381,7 @@ uint8_t SIM900::sendMessage(uint8_t smsFormat, char *smsAddress, const char *sms
 		}
 		if(!ns)
 		{
-			GSM->println(0x1B,BYTE); //do not send message
+			GSM->println((char)0x1B); //do not send message
 			delay(500);
 			GSM->flush();
 			return 1;  //There was an error waiting for the > 
@@ -406,7 +408,7 @@ uint8_t SIM900::sendMessage(uint8_t smsFormat, char *smsAddress, const char *sms
 			GSM->println();
 		}
 	}
-    GSM->println(0x1A,BYTE);
+    GSM->println((char)0x1A);
     timeOut = millis();
 	while ((millis() - timeOut) <= CMGS2_TO)
 	{
@@ -637,11 +639,15 @@ uint8_t SIM900::signalQuality(bool wakeUpComm)
 
 void SIM900::printLatLon(long *lat, long *lon)
 {
-	GSM->print(*lat/1000000);
-	GSM->print("+");
-	GSM->print(abs((*lat%1000000)/10000.0),4);
-	GSM->print(",");
-	GSM->print(*lon/1000000);
-	GSM->print("+");
-	GSM->print(abs((*lon%1000000)/10000.0),4);
+		if(*lat < 0)
+			GSM->print("-");
+        GSM->print(abs(*lat/1000000));
+        GSM->print("+");
+        GSM->print(abs((*lat%1000000)/10000.0),4);
+        GSM->print(",");
+		if(*lon < 0)
+			GSM->print("-");
+        GSM->print(abs(*lon/1000000));
+        GSM->print("+");
+        GSM->print(abs((*lon%1000000)/10000.0),4);
 }
