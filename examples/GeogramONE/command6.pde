@@ -52,7 +52,7 @@ void command6()
 			for(uint8_t e = 0; e < 38; e++)
 			{
 				EEPROM.write(eepAdd + e,ptr[e]);
-				if(ptr[e] == NULL)
+				if(!ptr[e])
 					break;
 			}
 			EEPROM.write(eepAdd + 38,'\0'); 
@@ -64,7 +64,7 @@ void command6()
 			for(uint8_t e = 0; e < 24; e++)
 			{
 				EEPROM.write(eepAdd + e,ptr[e]);
-				if(ptr[e] == NULL)
+				if(!ptr[e])
 					break;
 			}
 			EEPROM.write(eepAdd + 24,'\0'); 
@@ -75,7 +75,7 @@ void command6()
 			for(uint8_t e = 0; e < 49; e++)
 			{
 				EEPROM.write(eepAdd + e,ptr[e]);
-				if(ptr[e] == NULL)
+				if(!ptr[e])
 					break;
 			}
 			EEPROM.write(eepAdd + 49,'\0'); 

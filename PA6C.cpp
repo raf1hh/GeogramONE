@@ -9,7 +9,7 @@ PA6C::PA6C(HardwareSerial *ser)
 	gpsSerial = ser;
 }
 
-uint8_t PA6C::init(unsigned long baudRate)
+void PA6C::init(unsigned long baudRate)
 {
 	gpsSerial->begin(baudRate);
 }
@@ -21,7 +21,7 @@ uint8_t PA6C::saveCoordinates(gpsData *coord)
 		return 0;
 	else
 		return 1;
-	#else USEPOSITIONFIXIND
+	#else // USEPOSITIONFIXIND
 		return 0;
 	#endif
 }
@@ -552,7 +552,7 @@ void PA6C::lookForDollarSign(GPS *gpsTemp)
 	gpsTemp->returnStatus = 2;
 }
 
-void PA6C::getSentenceId(GPS *gpsTemp, char *sId)
+void PA6C::getSentenceId(GPS *gpsTemp, const char * const sId)
 {
 	gpsTemp->field[gpsTemp->index] = gpsSerial->read();
 	gpsTemp->checksum ^= gpsTemp->field[gpsTemp->index];
@@ -673,7 +673,7 @@ uint8_t PA6C::geoFenceDistance(gpsData *last, geoFence *fence)  // was originall
 		else
 			return 1;
 	}
-	if(fence->inOut) //outside fence
+	else //outside fence
 	{
 		if( d < fence->radius )
 			return 0;

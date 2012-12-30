@@ -66,12 +66,12 @@ class SIM900
 {
 	public:
 		SIM900(AltSoftSerial *ser);
-		uint8_t init(unsigned long);
+		void init(unsigned long);
 		uint8_t checkForMessages();
 		uint8_t deleteMessage(uint8_t);
 		uint8_t readMessageBreakOut(simSmsData *, uint8_t);
 		uint8_t sendMessage(uint8_t, char *, const char *, uint16_t eepromMsgAddress = 1024);
-		uint8_t goesWhere(char *);
+		void goesWhere(char *);
 		uint8_t confirmPassword(char *, char *);
 		uint8_t deleteAllMessages();
 		uint8_t getCommand(char *);

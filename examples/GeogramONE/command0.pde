@@ -3,7 +3,6 @@ void command0()  //send coordinates
 {
 	uint16_t geoDataFormat;
 	uint8_t rssi = sim900.signalQuality(1);
-	uint8_t tFormat = EEPROM.read(TIMEFORMAT);
 	EEPROM_readAnything(GEODATAFORMAT2,geoDataFormat);
 	if(sim900.sendMessage(0,smsData.smsNumber,NULL))
 		return;

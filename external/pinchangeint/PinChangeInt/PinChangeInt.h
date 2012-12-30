@@ -376,7 +376,7 @@ void PCintPort::enable(PCintPin* p, PCIntvoidFuncPtr userFunc, uint8_t mode) {
 
 int8_t PCintPort::addPin(uint8_t arduinoPin, PCIntvoidFuncPtr userFunc, uint8_t mode)
 {
-	PCintPin* tmp;
+	PCintPin* tmp = NULL;
 
 	// Add to linked list, starting with firstPin. If pin already exists, just enable.
 	if (firstPin != NULL) {

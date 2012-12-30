@@ -73,7 +73,7 @@ void SIM900::printPROGMEM(int index, int atArg)
 		GSM->println(atArg);
 }
 
-uint8_t SIM900::init(unsigned long baudRate)
+void SIM900::init(unsigned long baudRate)
 {
 	pinMode(2,INPUT);
 	pinMode(GSMSTATUS,INPUT);
@@ -289,7 +289,7 @@ uint8_t SIM900::readMessageBreakOut(simSmsData *sms, uint8_t msg)
 	return 0;
 }
 
-uint8_t SIM900::goesWhere(char *smsAddress)
+void SIM900::goesWhere(char *smsAddress)
 {
 	uint8_t replyOrStored = 0;
 	EEPROM_readAnything(RETURNADDCONFIG,replyOrStored);

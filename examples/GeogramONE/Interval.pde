@@ -1,4 +1,4 @@
-uint8_t timerMenu()
+void timerMenu()
 {
 	static unsigned long intervalTimer = millis();
 	if((millis() - intervalTimer) >= (timeInterval*1000))

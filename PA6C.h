@@ -139,7 +139,7 @@ class PA6C
 		PA6C(HardwareSerial *ser);
 		configVar settings;
 		uint8_t getTheData(gpsData *);
-		uint8_t init(unsigned long);
+		void init(unsigned long);
 		uint8_t sleepGPS();
 		uint8_t wakeUpGPS();
 		uint8_t geoFenceDistance(gpsData *, geoFence *);
@@ -167,7 +167,7 @@ class PA6C
 		uint8_t verifyChecksum(GPS *);
 		uint8_t saveCoordinates(gpsData *);
 		void lookForDollarSign(GPS *);
-		void getSentenceId(GPS *, char *);
+		void getSentenceId(GPS *, const char * const);
 	#if USECOURSE
 		void directionOfTravel(gpsData *);
 	#endif
