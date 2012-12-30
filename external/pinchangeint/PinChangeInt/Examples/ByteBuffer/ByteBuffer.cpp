@@ -8,18 +8,10 @@
 	to false as a side effect.
 	added the ByteBuffer(unsigned int buf_size) constructor.
 	added the init() method, and had the constructor call it automagically.
-	protected certain sections of the code with cli()/sei() calls, for safe use by interrupts.
 	Also made the capacity, position, length, and fillError variables volatile, for safe use by interrupts.
  */
  
 #include "ByteBuffer.h"
-
-#ifndef cli()
-# define cli()  __asm__ __volatile__ ("cli" ::)
-#endif
-#ifndef sei()
-# define sei()  __asm__ __volatile__ ("sei" ::)
-#endif
 
 void ByteBuffer::init(){
 	ByteBuffer::init(DEFAULTBUFSIZE);
@@ -73,20 +65,17 @@ byte ByteBuffer::peek(unsigned int index){
 }
 
 uint8_t ByteBuffer::put(byte in){
-	cli();
 	if(length < capacity){
 		// save data byte at end of buffer
 		data[(position+length) % capacity] = in;
 		// increment the length
 		length++;
-		sei();
 		return 1;
 	}
 	// return failure
 	//Serial.print("E: put: ");
 	//Serial.println(length, DEC);
 	fillError=true;
-	sei();
 	return 0;
 }
 
@@ -96,11 +85,10 @@ uint8_t ByteBuffer::putString(char *in){
 	char *inString;
 
 	inString=in;
-	cli();
+	uint8_t oldSREG = SREG; cli();
 	while(length <= capacity){
 		if (length == capacity) {
 			fillError=true;
-			sei();
 			return count;
 		}
 		// save data byte at end of buffer
@@ -111,15 +99,16 @@ uint8_t ByteBuffer::putString(char *in){
 		count++;
 		if (*inString == 0) {
 			if (count==0) fillError=true; // Serial.println("E: putString"); };
-			sei();
+			SREG = oldSREG; // Restore register; reenables interrupts
 			return count;
 		}
 	}
-	sei();
+	SREG = oldSREG; // Restore register; reenables interrupts
+	return count;
 }
 
 uint8_t ByteBuffer::putInFront(byte in){
-	cli();
+	uint8_t oldSREG = SREG; cli();
 	if(length < capacity){
 			// save data byte at end of buffer
 			if( position == 0 )
@@ -129,38 +118,37 @@ uint8_t ByteBuffer::putInFront(byte in){
 			data[position] = in;
 			// increment the length
 			length++;
-			sei();
+			SREG = oldSREG; // Restore register; reenables interrupts
 			return 1;
 	}
 	// return failure
 	//Serial.println("E: putInFront");
 	fillError=true;
-	sei();
+	SREG = oldSREG; // Restore register; reenables interrupts
 	return 0;
 }
 
 byte ByteBuffer::get(){
+	uint8_t oldSREG = SREG; cli();
 	byte b = 0;
 
 	if(length > 0){
-		cli();
 		b = data[position];
 		// move index down and decrement length
 		position = (position+1)%capacity;
 		length--;
-		sei();
 	}
-
+	SREG = oldSREG; // Restore register; reenables interrupts
 	return b;
 }
 
 byte ByteBuffer::getFromBack(){
 	byte b = 0;
 	if(length > 0){
-		cli();
+		uint8_t oldSREG = SREG; cli();
 		b = data[(position+length-1)%capacity];
 		length--;
-		sei();
+		SREG = oldSREG; // Restore register; reenables interrupts
 	}
 
 	return b;
@@ -170,13 +158,13 @@ byte ByteBuffer::getFromBack(){
 // Ints
 //
 
-int ByteBuffer::putIntInFront(int in){
+void ByteBuffer::putIntInFront(int in){
     byte *pointer = (byte *)&in;
 	putInFront(pointer[0]);	
 	putInFront(pointer[1]);	
 }
 
-int ByteBuffer::putInt(int in){
+void ByteBuffer::putInt(int in){
     byte *pointer = (byte *)&in;
 	put(pointer[1]);	
 	put(pointer[0]);	
@@ -203,7 +191,7 @@ int ByteBuffer::getIntFromBack(){
 // Longs
 //
 
-int ByteBuffer::putLongInFront(long in){
+void ByteBuffer::putLongInFront(long in){
     byte *pointer = (byte *)&in;
 	putInFront(pointer[0]);	
 	putInFront(pointer[1]);	
@@ -211,7 +199,7 @@ int ByteBuffer::putLongInFront(long in){
 	putInFront(pointer[3]);	
 }
 
-int ByteBuffer::putLong(long in){
+void ByteBuffer::putLong(long in){
     byte *pointer = (byte *)&in;
 	put(pointer[3]);	
 	put(pointer[2]);	
@@ -245,7 +233,7 @@ long ByteBuffer::getLongFromBack(){
 // Floats
 //
 
-int ByteBuffer::putFloatInFront(float in){
+void ByteBuffer::putFloatInFront(float in){
     byte *pointer = (byte *)&in;
 	putInFront(pointer[0]);	
 	putInFront(pointer[1]);	
@@ -253,7 +241,7 @@ int ByteBuffer::putFloatInFront(float in){
 	putInFront(pointer[3]);	
 }
 
-int ByteBuffer::putFloat(float in){
+void ByteBuffer::putFloat(float in){
     byte *pointer = (byte *)&in;
 	put(pointer[3]);	
 	put(pointer[2]);	
