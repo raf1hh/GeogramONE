@@ -77,20 +77,20 @@ void GeogramONE::configureMAX17043(uint8_t *battery)
 
 void GeogramONE::configureBMA250(registersBMA250 *config)
 {
-	EEPROM_readAnything(BMA0X0F,config->zeroF);
-	EEPROM_readAnything(BMA0X10,config->oneZero);
-	EEPROM_readAnything(BMA0X11,config->oneOne);
-	EEPROM_readAnything(BMA0X16,config->oneSix);
-	EEPROM_readAnything(BMA0X17,config->oneSeven);
-	EEPROM_readAnything(BMA0X19,config->oneNine);
-	EEPROM_readAnything(BMA0X1A,config->oneA);	
-	EEPROM_readAnything(BMA0X1B,config->oneB);
-	EEPROM_readAnything(BMA0X20,config->twoZero);
-	EEPROM_readAnything(BMA0X21,config->twoOne);
-	EEPROM_readAnything(BMA0X25,config->twoFive);
-	EEPROM_readAnything(BMA0X26,config->twoSix);
-	EEPROM_readAnything(BMA0X27,config->twoSeven);
-	EEPROM_readAnything(BMA0X28,config->twoEight);
+	EEPROM_readAnything(BMA0X0F,config->R0F);
+	EEPROM_readAnything(BMA0X10,config->R10);
+	EEPROM_readAnything(BMA0X11,config->R11);
+	EEPROM_readAnything(BMA0X16,config->R16);
+	EEPROM_readAnything(BMA0X17,config->R17);
+	EEPROM_readAnything(BMA0X19,config->R19);
+	EEPROM_readAnything(BMA0X1A,config->R1A);	
+	EEPROM_readAnything(BMA0X1B,config->R1B);
+	EEPROM_readAnything(BMA0X20,config->R20);
+	EEPROM_readAnything(BMA0X21,config->R21);
+	EEPROM_readAnything(BMA0X25,config->R25);
+	EEPROM_readAnything(BMA0X26,config->R26);
+	EEPROM_readAnything(BMA0X27,config->R27);
+	EEPROM_readAnything(BMA0X28,config->R28);
 }
 
 void GeogramONE::configurePA6C(configVar *settings)
