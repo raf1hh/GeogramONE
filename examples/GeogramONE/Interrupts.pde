@@ -5,7 +5,7 @@ void ringIndicator()
 
 void movement()
 {
-	move = 1;
+	move = 0xFF;
 }
 
 void charger()
@@ -28,6 +28,24 @@ void chargerStatus()
 {
 	delay(2);
 	charge = digitalRead(PG_INT);
+	smsPowerProfile = EEPROM.read(SMSPOWERPROFILE);
+	udpPowerProfile = EEPROM.read(UDPPOWERPROFILE);
+	if(charge)
+	{
+		smsInterval = EEPROM.read(SMSSENDINTERVALPLUG);
+		udpInterval = EEPROM.read(UDPSENDINTERVALPLUG);
+		smsPowerSpeed = EEPROM.read(SMSSPEEDPLUG);
+		udpPowerSpeed = EEPROM.read(UDPSPEEDPLUG);
+	}
+	else
+	{
+		smsPowerProfile >>= 4;
+		udpPowerProfile >>= 4;
+		smsInterval = EEPROM.read(SMSSENDINTERVALBAT);
+		udpInterval = EEPROM.read(UDPSENDINTERVALBAT);
+		smsPowerSpeed = EEPROM.read(SMSSPEEDBAT);
+		udpPowerSpeed = EEPROM.read(UDPSPEEDBAT);
+	}
 }
 
 void d4Interrupt()
@@ -39,6 +57,13 @@ void d10Interrupt()
 {
 	d10Switch = 0x01;
 }
+
+#if USEPOWERSWITCH
+void d11Interrupt()
+{
+	d11PowerSwitch = 0x01;
+}
+#endif
 
 /*int freeRam () 
 {

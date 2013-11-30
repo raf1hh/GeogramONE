@@ -2,7 +2,7 @@
 
 template <class T> int EEPROM_writeAnything(int ee, const T& value)
 {
-    const byte* p = (const byte*)(const void*)&value;
+    const char* p = (const char*)(const void*)&value;
     unsigned int i;
     for (i = 0; i < sizeof(value); i++)
         EEPROM.write(ee++, *p++);
@@ -11,7 +11,7 @@ template <class T> int EEPROM_writeAnything(int ee, const T& value)
 
 template <class T> int EEPROM_readAnything(int ee, T& value)
 {
-    byte* p = (byte*)(void*)&value;
+    char* p = (char*)(void*)&value;
     unsigned int i;
     for (i = 0; i < sizeof(value); i++)
 		*p++ = EEPROM.read(ee++);
@@ -70,36 +70,6 @@ void GeogramONE::configureIO(uint8_t pinNumber, uint8_t eepromAddress)
 	if(ioConfig == 4){analogReference(DEFAULT);analogRead(pinNumber - 14);}
 }
 
-void GeogramONE::configureMAX17043(uint8_t *battery)
-{  
-	EEPROM_readAnything(BATTERYLOWLEVEL,*battery);
-}
-
-void GeogramONE::configureBMA250(registersBMA250 *config)
-{
-	EEPROM_readAnything(BMA0X0F,config->R0F);
-	EEPROM_readAnything(BMA0X10,config->R10);
-	EEPROM_readAnything(BMA0X11,config->R11);
-	EEPROM_readAnything(BMA0X16,config->R16);
-	EEPROM_readAnything(BMA0X17,config->R17);
-	EEPROM_readAnything(BMA0X19,config->R19);
-	EEPROM_readAnything(BMA0X1A,config->R1A);	
-	EEPROM_readAnything(BMA0X1B,config->R1B);
-	EEPROM_readAnything(BMA0X20,config->R20);
-	EEPROM_readAnything(BMA0X21,config->R21);
-	EEPROM_readAnything(BMA0X25,config->R25);
-	EEPROM_readAnything(BMA0X26,config->R26);
-	EEPROM_readAnything(BMA0X27,config->R27);
-	EEPROM_readAnything(BMA0X28,config->R28);
-}
-
-void GeogramONE::configurePA6C(configVar *settings)
-{
-	EEPROM_readAnything(ENGMETRIC,settings->engMetric);
-	EEPROM_readAnything(TIMEFORMAT,settings->timeFormat);
-	EEPROM_readAnything(TIMEZONE,settings->timeZone);
-}
-
 void GeogramONE::configureFence(uint8_t fenceNumber, geoFence *fence)
 {
 	uint8_t offset = 0;
@@ -114,10 +84,10 @@ void GeogramONE::configureFence(uint8_t fenceNumber, geoFence *fence)
 	return ;
 }
 
-void GeogramONE::configureBreachParameters(uint8_t *breachSpeed, uint8_t *breachReps)
+void GeogramONE::configureBreachParameters(uint8_t *breachS, uint8_t *breachR)
 {
-	EEPROM_readAnything(BREACHSPEED, breachSpeed);
-	EEPROM_readAnything(BREACHREPS, breachReps);
+	*breachS = EEPROM.read(BREACHSPEED);
+	*breachR = EEPROM.read(BREACHREPS);
 }
 
 
@@ -132,9 +102,8 @@ void GeogramONE::getFenceActive(uint8_t fenceNumber, uint8_t *fenceVar)
 	return ;
 }
 
-void GeogramONE::configureInterval(uint32_t *timeInterval, uint32_t *sleepTimeOn, uint32_t *sleepTimeOff, uint8_t *sleepTimeConfig)
+void GeogramONE::configureSleepTime(uint32_t *sleepTimeOn, uint32_t *sleepTimeOff, uint8_t *sleepTimeConfig)
 {
-	EEPROM_readAnything(SENDINTERVAL,*timeInterval);
 	EEPROM_readAnything(SLEEPTIMEON,*sleepTimeOn);
 	EEPROM_readAnything(SLEEPTIMEOFF,*sleepTimeOff);
 	EEPROM_readAnything(SLEEPTIMECONFIG,*sleepTimeConfig);
@@ -144,7 +113,7 @@ void GeogramONE::configureInterval(uint32_t *timeInterval, uint32_t *sleepTimeOn
 void GeogramONE::configureSpeed(uint8_t *cmd3, uint8_t *speedH, uint16_t *speedL)
 {
 	EEPROM_readAnything(SPEEDLIMIT,*speedL);
-	EEPROM_readAnything(SPEEDHYST,*speedH);
+	*speedH = EEPROM.read(SPEEDHYST);
 	if(*speedL)
 		*cmd3 = 0x02;
 	else

@@ -14,53 +14,39 @@ void command3() //speed monitoring mode
 		else
 			cmd3 = 0x02;
 	}
-	if((cmd3 == 2) && (lastValid.speedKnots > speedLimit))
+	if((cmd3 == 2) && (lastValid.speed > speedLimit))
 		cmd3 = 0x03;
 	if(cmd3 == 3)
 	{
-		if(sim900.sendMessage(0,smsData.smsNumber,NULL))
+		goesWhere(smsData.smsNumber);
+		if(sim900.prepareSMS(smsData.smsNumber))
 			return;
-		char eepChar;
-		for (uint8_t ep = 0; ep < 25; ep++)
-		{
-			eepChar = EEPROM.read(ep + SPEEDMSG);
-			if(eepChar == '\0')
-				break;
-			else
-				GSM.print(eepChar);
-		}
+		printEEPROM(SPEEDMSG);
 		GSM.println();
 		uint16_t speedDataOnly = 0x4818; //Speed, course, battery percent, ID
 		printHTTP(&speedDataOnly, 0);
-		if(sim900.sendMessage(3,NULL,NULL))
+		if(sim900.sendSMS())
 			return;
-		maxSpeed = lastValid.speedKnots;
+		maxSpeed = lastValid.speed;
 		cmd3 = 0x04;
 	}
 	if(cmd3 == 4)
 	{
-		if(lastValid.speedKnots > maxSpeed)
-			maxSpeed = lastValid.speedKnots;
-		if(lastValid.speedKnots <= (uint16_t)(speedLimit - speedHyst))
+		if(lastValid.speed > maxSpeed)
+			maxSpeed = lastValid.speed;
+		if(lastValid.speed <= (uint16_t)(speedLimit - speedHyst))
 			cmd3 = 0x05;
 	}
 	if(cmd3 == 5)
 	{
-		if(sim900.sendMessage(0,smsData.smsNumber,NULL))
+		goesWhere(smsData.smsNumber);
+		if(sim900.prepareSMS(smsData.smsNumber))
 			return;
-		char eepChar;
-		for (uint8_t ep = 0; ep < 25; ep++)
-		{
-			eepChar = EEPROM.read(ep + MAXSPEEDMSG);
-			if(eepChar == '\0')
-				break;
-			else
-				GSM.print(eepChar);
-		}
+		printEEPROM(MAXSPEEDMSG);
 		GSM.println(maxSpeed);
 		uint16_t speedDataOnly = 0x4818; //Speed, course, battery percent, ID
 		printHTTP(&speedDataOnly, 0);
-		if(sim900.sendMessage(3,NULL,NULL))
+		if(sim900.sendSMS())
 			return;
 		cmd3 = 0x02; 
 		maxSpeed = 0;
